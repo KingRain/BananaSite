@@ -1,8 +1,6 @@
 # 🍌 Chaos By Design - The Most Frustrating Yet Usable Web App 💀
 
-Welcome to **Chaos By Design**, where UI/UX nightmares come to life! 😈 This is part of a competition where the goal is to *intentionally* create the most frustrating yet technically functional web app.
-
-> 🚀 "You can use it... if you dare!"
+Welcome to **Banana Site**, a submission for Chaos By Design where UI/UX nightmares come to life! 😈 This is part of a competition where the goal is to *intentionally* create the most frustrating yet technically functional web app.
 
 ## 🔥 Features (Or Should We Say "Sufferings")
 | **Feature** | **Description** |
