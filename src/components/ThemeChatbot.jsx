@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FaRobot, FaPaperPlane } from "react-icons/fa";
 
 // Initialize Gemini API
-const API_KEY = "AIzaSyCcahIyfaWgcVlBT2o5Ap5hQwrd3NYesMk"; // Replace with your actual key
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export default function ThemeChatbot({ setThemeColors }) {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginForm from "../components/LoginForm";
 import BananaBackground from "../components/BananaBackground";
 import BananaEffect from "../components/BananaEffect";
@@ -17,8 +17,20 @@ export default function LoginPage() {
     textcolour: "#f8fafc",
   });
 
-  const _spawnPopup = () => setPopups((prev) => [...prev, Math.random()]);
+  const spawnPopup = () => setPopups((prev) => [...prev, Math.random()]);
   const removePopup = (index) => setPopups((prev) => prev.filter((_, i) => i !== index));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // 95% chance to spawn a popup
+      if (Math.random() < 0.95) {
+        spawnPopup();
+        console.log("Popup spawned!");
+      }
+    }, 5000); // Check every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-transparent p-4 overflow-hidden" style={{ backgroundColor: themeColors.bgcolour, color: themeColors.textcolour }}>
