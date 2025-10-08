@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { X, Terminal } from "lucide-react";
 
 export default function TerminalPopup({ onInstallComplete }) {
@@ -7,23 +7,51 @@ export default function TerminalPopup({ onInstallComplete }) {
   const [output, setOutput] = useState(["user@local:~$ "]); // Simulated path
   const [installing, setInstalling] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false); // State to track login success
+  const [isNpmInstalled, setIsNpmInstalled] = useState(false); // Track if npm install completed
+  const terminalRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Auto-scroll to bottom when output changes
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [output]);
+
+  // Focus input when terminal opens
+  useEffect(() => {
+    if (isOpen && inputRef.current && !loggedIn) {
+      inputRef.current.focus();
+    }
+  }, [isOpen, loggedIn]);
 
   const handleCommand = () => {
     if (installing) return;
 
     if (input.trim() === "clear") {
       setOutput(["user@local:~$ "]);
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
     } else if (input.trim() === "help") {
       setOutput([
         ...output,
         "user@local:~$ help",
         "Available commands:",
         "- npm install",
+        "- hack-government-servers (requires npm install)",
         "- clear",
         "- help",
         "- login <username> <password>",
         "user@local:~$ ",
       ]);
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
     } else if (input.trim() === "npm install") {
       setInstalling(true);
       setOutput([...output, "user@local:~$ npm install", "Installing packages..."]);
@@ -46,33 +74,133 @@ export default function TerminalPopup({ onInstallComplete }) {
           clearInterval(installInterval);
           setOutput([
             "✔ All packages installed successfully!",
-            "Hint: Type 'login <username> <password>' to access the system.",
-            "Example: login jintu help404",
             "user@local:~$ ",
           ]);
           setInstalling(false);
+          setIsNpmInstalled(true); // Mark npm install as completed
           if (onInstallComplete) onInstallComplete(true);
+          // Focus input after npm install completes
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }, 100);
         }
       }, 800);
+    } else if (input.trim() === "hack-government-servers") {
+      if (!isNpmInstalled) {
+        setOutput([...output, "❌ Error: Run 'npm install' first before attempting government server hacks!", "user@local:~$ "]);
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }, 100);
+        return;
+      }
+
+      setInstalling(true);
+      setOutput([...output, "user@local:~$ hack-government-servers", "Initiating government server breach..."]);
+
+      const hackSteps = [
+        "Scanning for vulnerable servers...",
+        "Target acquired: Indian Government Portal",
+        "Bypassing firewall...",
+        "Cracking encryption...",
+        "Searching for fortnite vbucks codes...",
+        "Extracting credit card data...",
+        "Searching for Modis secret files...",
+        "Downloading classified documents...",
+        "Looking for nuclear launch codes...",
+        "Adding banana emojis to all documents...",
+        "Replacing all photos with troll faces...",
+        "Searching for hidden bitcoin wallets...",
+        "Attempting to read Modis mind...",
+        "Adding circus music to government website...",
+        "Overloading server with rickrolls...",
+        "Almost there... finding credentials..."
+      ];
+
+      let i = 0;
+      const hackInterval = setInterval(() => {
+        if (i < hackSteps.length) {
+          setOutput((prev) => {
+            const newOutput = [...prev];
+            newOutput[newOutput.length - 1] = `${hackSteps[i]}`;
+            return newOutput;
+          });
+          i++;
+        } else {
+          clearInterval(hackInterval);
+          setInstalling(false);
+
+          // Show Modi credentials with typing animation
+          setTimeout(() => {
+            setOutput((prev) => [...prev, "SUCCESS! Found Modis credentials:"]);
+          }, 500);
+
+          setTimeout(() => {
+            setOutput((prev) => [...prev, "Username: narendra.modi@gov.in"]);
+          }, 1000);
+
+          setTimeout(() => {
+            setOutput((prev) => [...prev, "Password: MakeInIndia2024!"]);
+          }, 1500);
+
+          setTimeout(() => {
+            setOutput((prev) => [...prev, "Email: modi@pmo.gov.in"]);
+          }, 2000);
+
+          setTimeout(() => {
+            setOutput((prev) => [...prev, "Bank Account: 1234-5678-9012-3456"]);
+          }, 2500);
+
+          setTimeout(() => {
+            setOutput((prev) => [...prev, "user@local:~$ "]);
+          }, 5000);
+          // Focus input after hack command completes
+          setTimeout(() => {
+            setInstalling(false);
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }, 5100);
+        }
+      }, 600);
     } else if (input.trim().startsWith("login")) {
       const parts = input.trim().split(" ");
       if (parts.length === 3) {
         const username = parts[1];
         const password = parts[2];
 
-        if (username === "jintu" && password === "help404") {
+        if (username === "narendra.modi@gov.in" && password === "MakeInIndia2024!") {
           setOutput([...output, "✔ Login successful!", "Loading..."]);
           setTimeout(() => setLoggedIn(true), 2000);
         } else {
           setOutput([...output, "❌ Incorrect username or password.", "user@local:~$ "]);
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }, 100);
         }
       } else {
         setOutput([...output, "❌ Invalid login syntax. Use: login <username> <password>", "user@local:~$ "]);
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }, 100);
       }
     } else {
       setOutput([...output, `user@local:~$ ${input}`, `Response: You typed '${input}'`, "user@local:~$ "]);
     }
     setInput("");
+    // Focus input after command execution
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   return (
@@ -91,7 +219,8 @@ export default function TerminalPopup({ onInstallComplete }) {
           {loggedIn ? (
             <div className="bg-green-900 text-white p-8 rounded-lg shadow-lg flex flex-col items-center">
               <h1 className="text-4xl font-bold">🎉 Congratulations! 🎉</h1>
-              <p className="text-lg mt-2">You have successfully logged in.</p>
+              <p className="text-lg mt-2">You have successfully logged in as Modi!</p>
+              <p className="text-md mt-2 text-center">Contact @httperror on Discord for claiming your free Discord Nitro!</p>
               <button
                 className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 rounded shadow"
                 onClick={() => {
@@ -112,15 +241,15 @@ export default function TerminalPopup({ onInstallComplete }) {
                   size={20}
                 />
               </div>
-              <div className="flex-1 overflow-y-auto font-mono text-sm bg-gray-900 p-2 rounded h-[25rem]">
+              <div className="flex-1 overflow-y-auto font-mono text-sm bg-gray-900 p-2 rounded h-[25rem]" ref={terminalRef}>
                 {output.map((line, index) => (
                   <p key={index} className="animate-fade-in">{line}</p>
                 ))}
-                <span className="text-green-400 font-mono animate-blink">█</span>
               </div>
               <div className="mt-2 flex items-center">
                 <span className="text-green-400 font-mono">user@local:~$ </span>
                 <input
+                  ref={inputRef}
                   className="flex-1 bg-transparent text-green-400 border-none outline-none p-2 font-mono ml-2"
                   type="text"
                   value={input}
